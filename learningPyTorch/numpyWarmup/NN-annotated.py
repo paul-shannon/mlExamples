@@ -1,5 +1,7 @@
 # coding: utf-8
-
+#------------------------------------------------------------------------------------------------------------------------
+# from https://medium.com/datathings/a-neural-network-fully-coded-in-numpy-and-tensorflow-cc275c2b14dd
+#------------------------------------------------------------------------------------------------------------------------
 import numpy as np
 import pdb
 # import matplotlib.pyplot as plt 
@@ -21,25 +23,26 @@ def forwardMult(A,B):
     return np.matmul(A,B) 
 
 def backwardMult(dC,A,B,dA,dB):
-    dA += np.matmul(dC,np.matrix.transpose(B))
-    dB += np.matmul(np.matrix.transpose(A),dC)
+    new_dA = dA + np.matmul(dC,np.matrix.transpose(B))
+    new_dB = dB + np.matmul(np.matrix.transpose(A),dC)
+    return (new_dA, new_dB)
     
 #Loss example in forward and backward (RMSE)
 def forwardloss(predictedOutput,realOutput):
     if(predictedOutput.shape == realOutput.shape):
-        loss = np.mean( 0.5*np.square(predictedOutput - realOutput))       
+        loss = np.mean( 0.5*np.square(predictedOutput - realOutput))
     else :
         print("Shape of arrays not the same")
     return loss
 
-def backwardloss(predictedOutput,realOutput):
+def backwardLoss(predictedOutput,realOutput):
     if(predictedOutput.shape == realOutput.shape):
         deltaOutput = (predictedOutput - realOutput)/predictedOutput.size
     else :
         print("Shape of arrays not the same")
     return deltaOutput
 
-# Optimizer example (SGD)
+# SGD: stochastic gradient descent
 def updateWeights(W,dW,learningRate):
     newWeights = W - learningRate * dW
     return newWeights
@@ -88,12 +91,16 @@ historyTrain=[] #Used to record the history of loss
 historyTest=[]
 i = 1
 while i <= epochs:
-    #Forward pass train:
-    nnOutput = forwardMult(inputArray,nnWeights)
-    lossTrain = forwardloss(nnOutput,targetMatrix)
+      #------------------------- 
+      #  Forward pass train
+      #------------------------- 
+    nnOutput = forwardMult(inputArray, nnWeights)      # just np.matmul(A,B) 
+    lossTrain = forwardloss(nnOutput, targetMatrix)    # np.mean(0.5*np.square(predictedOutput - realOutput))
     historyTrain.append(lossTrain)
     
-    #Forward pass test:
+      #------------------------- 
+      #  Forward pass test
+      #------------------------- 
     nnTest = forwardMult(inputTest,nnWeights)
     lossTest = forwardloss(nnTest,outputTest)
     historyTest.append(lossTest)
@@ -101,9 +108,12 @@ while i <= epochs:
     if(i%10==0):
         print("Epoch: " + str(i) + " Loss (train): " + "{0:.3f}".format(lossTrain) + " Loss (test): " + "{0:.3f}".format(lossTest))
         
-        #Backpropagate
-    deltaoutput = backwardloss(nnOutput,targetMatrix)
-    backwardMult(deltaoutput,inputArray,nnWeights,deltainput,deltaweights)
+      #--------------------------------
+      # Backpropagate: update weights
+      #-------------------------------
+
+    deltaoutput = backwardLoss(nnOutput,targetMatrix)
+    (deltainput, deltaweights) = backwardMult(deltaoutput,inputArray,nnWeights,deltainput,deltaweights)
     
     #Apply optimizer
     nnWeights = updateWeights(nnWeights,deltaweights, learningRate)
