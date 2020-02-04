@@ -48,14 +48,14 @@ def updateweights(W,dW,learningRate):
 np.random.seed(seed)
 inputArray = np.random.uniform(-5,5,(batchSize,inputSize))
 weights = np.random.uniform(-5,5,(inputSize,outputSize))
-outputArray = np.matmul(inputArray,weights)
+targetMatrix = np.matmul(inputArray,weights)
 inputTest = np.random.uniform(-5,5,(testSize,inputSize))
 outputTest = np.matmul(inputTest,weights)
 
 pdb.set_trace()
 
 inputArray
-outputArray
+targetMatrix
 inputTest
 outputTest
 
@@ -91,7 +91,7 @@ i = 1
 while i <= epochs:
     #Forward pass train:
     nnOutput = forwardMult(inputArray,nnWeights)
-    lossTrain = forwardloss(nnOutput,outputArray)
+    lossTrain = forwardloss(nnOutput,targetMatrix)
     historyTrain.append(lossTrain)
     
     #Forward pass test:
@@ -103,7 +103,7 @@ while i <= epochs:
         print("Epoch: " + str(i) + " Loss (train): " + "{0:.3f}".format(lossTrain) + " Loss (test): " + "{0:.3f}".format(lossTest))
         
         #Backpropagate
-    deltaoutput = backwardloss(nnOutput,outputArray)
+    deltaoutput = backwardloss(nnOutput,targetMatrix)
     backwardMult(deltaoutput,inputArray,nnWeights,deltainput,deltaweights)
     
     #Apply optimizer
