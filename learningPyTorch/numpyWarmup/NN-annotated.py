@@ -28,7 +28,7 @@ def backwardMult(dC,A,B,dA,dB):
     return (new_dA, new_dB)
     
 #Loss example in forward and backward (RMSE)
-def forwardloss(predictedOutput,realOutput):
+def forwardLoss(predictedOutput,realOutput):
     if(predictedOutput.shape == realOutput.shape):
         loss = np.mean( 0.5*np.square(predictedOutput - realOutput))
     else :
@@ -49,14 +49,13 @@ def updateWeights(W,dW,learningRate):
 
 #Generation of fake dataset - we generate random inputs and weights and calculate outputs
 np.random.seed(seed)
-inputArray = np.random.uniform(-5,5,(batchSize,inputSize))
+roStarterMatrix = np.random.uniform(-5,5,(batchSize,inputSize))
 weights = np.random.uniform(-5,5,(inputSize,outputSize))
-pdb.set_trace()
-targetMatrix = np.matmul(inputArray,weights)
+targetMatrix = np.matmul(roStarterMatrix,weights)
 inputTest = np.random.uniform(-5,5,(testSize,inputSize))
 outputTest = np.matmul(inputTest,weights)
 
-inputArray
+roStarterMatrix
 targetMatrix
 inputTest
 outputTest
@@ -91,18 +90,20 @@ historyTrain=[] #Used to record the history of loss
 historyTest=[]
 i = 1
 while i <= epochs:
-      #------------------------- 
-      #  Forward pass train
-      #------------------------- 
-    nnOutput = forwardMult(inputArray, nnWeights)      # just np.matmul(A,B) 
-    lossTrain = forwardloss(nnOutput, targetMatrix)    # np.mean(0.5*np.square(predictedOutput - realOutput))
+      #---------------------------------------------------------------------------------------------------
+      # forward step: calculate a new 10x3 matrix from current weights and 10x5 read-only starter matrix
+      # 
+      #---------------------------------------------------------------------------------------------------
+    predictedOutput = forwardMult(roStarterMatrix, nnWeights) # just np.matmul(roStarterMatrix, nmWeights) 
+    lossTrain = forwardLoss(predictedOutput, targetMatrix)    # np.mean(0.5*np.square(predictedOutput - targetMatrix))
     historyTrain.append(lossTrain)
-    
+    #pdb.set_trace()
+
       #------------------------- 
       #  Forward pass test
       #------------------------- 
-    nnTest = forwardMult(inputTest,nnWeights)
-    lossTest = forwardloss(nnTest,outputTest)
+    nnTest = forwardMult(inputTest, nnWeights)
+    lossTest = forwardLoss(nnTest, outputTest)
     historyTest.append(lossTest)
     #Print Loss every 50 epochs: 
     if(i%10==0):
@@ -112,8 +113,8 @@ while i <= epochs:
       # Backpropagate: update weights
       #-------------------------------
 
-    deltaoutput = backwardLoss(nnOutput,targetMatrix)
-    (deltainput, deltaweights) = backwardMult(deltaoutput,inputArray,nnWeights,deltainput,deltaweights)
+    deltaoutput = backwardLoss(predictedOutput, targetMatrix)
+    (deltainput, deltaweights) = backwardMult(deltaoutput,roStarterMatrix,nnWeights,deltainput,deltaweights)
     
     #Apply optimizer
     nnWeights = updateWeights(nnWeights,deltaweights, learningRate)
