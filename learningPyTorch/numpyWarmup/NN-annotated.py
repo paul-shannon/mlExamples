@@ -39,20 +39,19 @@ def backwardloss(predictedOutput,realOutput):
         print("Shape of arrays not the same")
     return deltaOutput
 
-#Optimizer example (SGD)
-def updateweights(W,dW,learningRate):
-    W -= learningRate * dW
-
+# Optimizer example (SGD)
+def updateWeights(W,dW,learningRate):
+    newWeights = W - learningRate * dW
+    return newWeights
 
 #Generation of fake dataset - we generate random inputs and weights and calculate outputs
 np.random.seed(seed)
 inputArray = np.random.uniform(-5,5,(batchSize,inputSize))
 weights = np.random.uniform(-5,5,(inputSize,outputSize))
+pdb.set_trace()
 targetMatrix = np.matmul(inputArray,weights)
 inputTest = np.random.uniform(-5,5,(testSize,inputSize))
 outputTest = np.matmul(inputTest,weights)
-
-pdb.set_trace()
 
 inputArray
 targetMatrix
@@ -107,7 +106,7 @@ while i <= epochs:
     backwardMult(deltaoutput,inputArray,nnWeights,deltainput,deltaweights)
     
     #Apply optimizer
-    updateweights(nnWeights,deltaweights, learningRate)
+    nnWeights = updateWeights(nnWeights,deltaweights, learningRate)
     
     #Reset deltas 
     deltainput = np.zeros((batchSize,inputSize))
