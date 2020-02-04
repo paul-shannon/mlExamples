@@ -35,12 +35,12 @@ def forwardLoss(predictedOutput,realOutput):
         print("Shape of arrays not the same")
     return loss
 
-def backwardLoss(predictedOutput,realOutput):
+def backwardLoss(predictedOutput, realOutput):
     if(predictedOutput.shape == realOutput.shape):
-        deltaOutput = (predictedOutput - realOutput)/predictedOutput.size
+        loss = (predictedOutput - realOutput)/predictedOutput.size
     else :
         print("Shape of arrays not the same")
-    return deltaOutput
+    return loss
 
 # SGD: stochastic gradient descent
 def updateWeights(W,dW,learningRate):
@@ -49,23 +49,23 @@ def updateWeights(W,dW,learningRate):
 
 #Generation of fake dataset - we generate random inputs and weights and calculate outputs
 np.random.seed(seed)
-roStarterMatrix = np.random.uniform(-5,5,(batchSize,inputSize))
+RO_starterMatrix = np.random.uniform(-5,5,(batchSize,inputSize))
 weights = np.random.uniform(-5,5,(inputSize,outputSize))
-targetMatrix = np.matmul(roStarterMatrix,weights)
+RO_targetMatrix = np.matmul(RO_starterMatrix,weights)
 inputTest = np.random.uniform(-5,5,(testSize,inputSize))
 outputTest = np.matmul(inputTest,weights)
 
-roStarterMatrix
-targetMatrix
+RO_starterMatrix
+RO_targetMatrix
 inputTest
 outputTest
 
 
 #initialization of NN by other random weights
 nnWeights = np.random.uniform(-3,3,(inputSize,outputSize))
-deltaweights = np.zeros((inputSize,outputSize))
+deltaWeights = np.zeros((inputSize,outputSize))
 deltainput = np.zeros((batchSize,inputSize))
-deltaoutput = np.zeros((inputSize,outputSize))
+deltaOutput = np.zeros((inputSize,outputSize))
 
 
 # In[10]:
@@ -90,14 +90,16 @@ historyTrain=[] #Used to record the history of loss
 historyTest=[]
 i = 1
 while i <= epochs:
+
       #---------------------------------------------------------------------------------------------------
       # forward step: calculate a new 10x3 matrix from current weights and 10x5 read-only starter matrix
-      # 
+      # calculate error: RMS of (current predictedOutput - RO_targetMatrix)
       #---------------------------------------------------------------------------------------------------
-    predictedOutput = forwardMult(roStarterMatrix, nnWeights) # just np.matmul(roStarterMatrix, nmWeights) 
-    lossTrain = forwardLoss(predictedOutput, targetMatrix)    # np.mean(0.5*np.square(predictedOutput - targetMatrix))
+
+    predictedOutput = forwardMult(RO_starterMatrix, nnWeights) # just np.matmul(RO_starterMatrix, nmWeights) 
+    lossTrain = forwardLoss(predictedOutput, RO_targetMatrix)  # np.mean(0.5*np.square(predictedOutput - RO_targetMatrix))
     historyTrain.append(lossTrain)
-    #pdb.set_trace()
+    pdb.set_trace()
 
       #------------------------- 
       #  Forward pass test
@@ -113,16 +115,22 @@ while i <= epochs:
       # Backpropagate: update weights
       #-------------------------------
 
-    deltaoutput = backwardLoss(predictedOutput, targetMatrix)
-    (deltainput, deltaweights) = backwardMult(deltaoutput,roStarterMatrix,nnWeights,deltainput,deltaweights)
+          # backward loss = (predictedOutput - realOutput)/predictedOutput.size
+          # def backwardMult(dC,A,B,dA,dB):
+          #     new_dA = dA + np.matmul(dC,np.matrix.transpose(B))
+          #     new_dB = dB + np.matmul(np.matrix.transpose(A),dC)
+          #     return (new_dA, new_dB)
+
+    deltaOutput = backwardLoss(predictedOutput, RO_targetMatrix)
+    (deltainput, deltaWeights) = backwardMult(deltaOutput,RO_starterMatrix,nnWeights,deltainput, deltaWeights)
     
     #Apply optimizer
-    nnWeights = updateWeights(nnWeights,deltaweights, learningRate)
+    nnWeights = updateWeights(nnWeights, deltaWeights, learningRate)
     
     #Reset deltas 
     deltainput = np.zeros((batchSize,inputSize))
-    deltaweights = np.zeros((inputSize,outputSize))
-    deltaoutput = np.zeros((inputSize,outputSize))
+    deltaWeights = np.zeros((inputSize,outputSize))
+    deltaOutput = np.zeros((inputSize,outputSize))
     
     #Start new epoch
     i = i+1

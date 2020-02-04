@@ -1,8 +1,8 @@
 # coding: utf-8
 
 import numpy as np
-import matplotlib.pyplot as plt 
 import pdb
+# import matplotlib.pyplot as plt 
 
 #config
 inputSize = 5
@@ -47,18 +47,16 @@ def updateweights(W,dW,learningRate):
 #Generation of fake dataset - we generate random inputs and weights and calculate outputs
 np.random.seed(seed)
 inputArray = np.random.uniform(-5,5,(batchSize,inputSize))
-print("--- initial inputArray")
-print(inputArray)
 weights = np.random.uniform(-5,5,(inputSize,outputSize))
 outputArray = np.matmul(inputArray,weights)
 inputTest = np.random.uniform(-5,5,(testSize,inputSize))
 outputTest = np.matmul(inputTest,weights)
 
 
-# inputArray
-# outputArray
-# inputTest
-# outputTest
+inputArray
+outputArray
+inputTest
+outputTest
 
 
 #initialization of NN by other random weights
@@ -67,8 +65,6 @@ deltaweights = np.zeros((inputSize,outputSize))
 deltainput = np.zeros((batchSize,inputSize))
 deltaoutput = np.zeros((inputSize,outputSize))
 
-weights; inputTest; nnWeights; outputArray
-# pdb.set_trace()
 
 # In[10]:
 
@@ -91,23 +87,33 @@ nnWeights
 historyTrain=[] #Used to record the history of loss
 historyTest=[]
 i = 1
-
 while i <= epochs:
+    #Forward pass train:
     nnOutput = forwardMult(inputArray,nnWeights)
     lossTrain = forwardloss(nnOutput,outputArray)
     historyTrain.append(lossTrain)
+    
+    #Forward pass test:
     nnTest = forwardMult(inputTest,nnWeights)
     lossTest = forwardloss(nnTest,outputTest)
-    print("lossTest: %6.2f  lossTrain: %6.2f" % (lossTest, lossTrain))
     historyTest.append(lossTest)
-    if(i%100==0 & i != 0):
+    #Print Loss every 50 epochs: 
+    if(i%10==0):
         print("Epoch: " + str(i) + " Loss (train): " + "{0:.3f}".format(lossTrain) + " Loss (test): " + "{0:.3f}".format(lossTest))
+        
+        #Backpropagate
     deltaoutput = backwardloss(nnOutput,outputArray)
     backwardMult(deltaoutput,inputArray,nnWeights,deltainput,deltaweights)
-    updateweights(nnWeights, deltaweights, learningRate)
+    
+    #Apply optimizer
+    updateweights(nnWeights,deltaweights, learningRate)
+    
+    #Reset deltas 
     deltainput = np.zeros((batchSize,inputSize))
     deltaweights = np.zeros((inputSize,outputSize))
     deltaoutput = np.zeros((inputSize,outputSize))
+    
+    #Start new epoch
     i = i+1
         
 #----------------------------------------------------------------------------------------------------
