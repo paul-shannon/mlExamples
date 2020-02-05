@@ -43,28 +43,11 @@ def load_data():
     That's done in the wrapper function ``load_data_wrapper()``, see
     below.
     """
-    #f = gzip.open('mnist.pkl.gz', 'rb')
-    #with open('mnist.pkl', 'rb') as f:
-    #    u = pickle._Unpickler(f)
-    #    u.encoding = 'latin1'
-    #    #p = u.load()
-    #    #print(p)
-    #    training_data, validation_data, test_data = u.load()
-    pdb.set_trace()
     file = "/Users/paul/github/mlExamples/learningPyTorch/nielsenHandwrittenDigits/data/mnist.pkl"
     os.path.exists(file)
     with open(file, 'rb') as f:
         training_data, validation_data, test_data = pickle.load(f, encoding="latin1")
     f.close()
-    #f = gzip.open('mnist.pkl.gz', 'rb')
-    #training_data, validation_data, test_data = pickle.load(f, encoding='latin1')
-
-    #u = pickle._Unpickler(f)
-    #u.encoding = 'latin1'
-    #p = u.load()
-    #print(p)
-    #training_data, validation_data, test_data = u.load()
-
     return (training_data, validation_data, test_data)
 
 def load_data_wrapper():
