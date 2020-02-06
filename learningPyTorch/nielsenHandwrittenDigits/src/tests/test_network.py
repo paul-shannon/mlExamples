@@ -18,12 +18,12 @@ def runTests():
     test_sigmoid()
     test_sigmoid_prime()
     test_feedforward()
-    # test_update_mini_batch()
-    test_backprop()
-    test_SGD()
-    test_evaluate()
-    test_cost_derivative()
-    test_fullRun()
+    test_update_mini_batch()
+    # test_backprop()
+    # test_SGD()
+    # test_evaluate()
+    # test_cost_derivative()
+    # test_fullRun()
 
 
 #----------------------------------------------------------------------------------------------------
@@ -218,15 +218,38 @@ def test_update_mini_batch():
    
     training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
     n = len(training_data)
+    assert(n == 50000)
     mini_batch_size = 10
     mini_batches = [training_data[k:k+mini_batch_size] for k in range(0, n, mini_batch_size)]
+    assert(len(mini_batches) == 5000)
+    batch = mini_batches[0][0]
+    assert(isinstance(batch, tuple))
+    array0 = batch[0]
+    array1 = batch[1]
+    assert(array0.shape, (784, 1))  # a 28 x 28 bit map
+    assert(array1.shape, (10, 1))   # a 10-element bit vector, the number pictured in the bit map
 
     layerCounts = [5, 10, 2]  # number of neurons in each of the 
-    net = network.Network(layerCounts)
+    demoNet = network.Network(layerCounts)
+    learningRate = 3.0
+      
+        #---------------------------------------------------------------
+        # code extracted from network.update_mini_batch, for exploration
+        #---------------------------------------------------------------
 
-    learningRate = 3
-    net.update_mini_batch(mini_batches, learningRate)
     pdb.set_trace()
+
+    nabla_b = [np.zeros(b.shape) for b in demoNet.biases]
+    assert(nabla_b[0]
+    nabla_w = [np.zeros(w.shape) for w in demoNet.weights]
+    for x, y in mini_batch:
+        delta_nabla_b, delta_nabla_w = demoNet.backprop(x, y)
+        nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
+        nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
+    demoNet.weights = [w-(learningRate/len(mini_batch))*nw
+                    for w, nw in zip(demoNet.weights, nabla_w)]
+    demoNet.biases = [b-(learningRate/len(mini_batch))*nb
+                   for b, nb in zip(demoNet.biases, nabla_b)]
 
     
 #----------------------------------------------------------------------------------------------------
