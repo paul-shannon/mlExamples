@@ -1,0 +1,15 @@
+from
+https://machinelearningmastery.com/gentle-introduction-mini-batch-gradient-descent-configure-batch-size/
+
+the basic scheme:
+
+model = initialization(...)
+n_epochs = ...
+train_data = ...
+for i in n_epochs:
+   train_data = shuffle(train_data)
+   X, y = split(train_data)
+   predictions = predict(X, model)
+   error = calculate_error(y, predictions)
+   model = update_model(model, error)
+

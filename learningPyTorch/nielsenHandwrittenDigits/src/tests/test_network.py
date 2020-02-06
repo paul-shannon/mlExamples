@@ -18,7 +18,7 @@ def runTests():
     test_sigmoid()
     test_sigmoid_prime()
     test_feedforward()
-    test_update_mini_batch()
+    # test_update_mini_batch()
     test_backprop()
     test_SGD()
     test_evaluate()
@@ -220,7 +220,12 @@ def test_update_mini_batch():
     n = len(training_data)
     mini_batch_size = 10
     mini_batches = [training_data[k:k+mini_batch_size] for k in range(0, n, mini_batch_size)]
-    self.update_mini_batch(mini_batch, learningRate)
+
+    layerCounts = [5, 10, 2]  # number of neurons in each of the 
+    net = network.Network(layerCounts)
+
+    learningRate = 3
+    net.update_mini_batch(mini_batches, learningRate)
     pdb.set_trace()
 
     

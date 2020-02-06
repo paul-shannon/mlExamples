@@ -79,7 +79,7 @@ class Network(object):
         """
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
-        print("=== network.py: update_mini_batch")
+        # print("=== network.py: update_mini_batch")
         for x, y in mini_batch:
             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
             nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
