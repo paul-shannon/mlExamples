@@ -25,12 +25,18 @@ class Network(object):
         respective layers of the network.  For example, if the list
         was [2, 3, 1] then it would be a three-layer network, with the
         first layer containing 2 neurons, the second layer 3 neurons,
-        and the third layer 1 neuron.  The biases and weights for the
-        network are initialized randomly, using a Gaussian
-        distribution with mean 0, and variance 1.  Note that the first
-        layer is assumed to be an input layer, and by convention we
+        and the third layer 1 neuron.  
+        The biases and weights for the network are initialized randomly, 
+        using a Gaussian distribution with mean 0, and variance 1.  Note that 
+        the first layer is assumed to be an input layer, and by convention we
         won't set any biases for those neurons, since biases are only
-        ever used in computing the outputs from later layers."""
+        ever used in computing the outputs from later layers.
+        bias: y = ax + bias.  provides every node with a trainable constant,
+              perhaps its reactivity, moving the sigmoid left or right
+        weights: for each non-input layer, create a random array of
+                  weights, 1 row for each input node, 1 column for each node in the layer 
+                  in effect saying: the input nodes each contribute according to their weight
+        """
         self.num_layers = len(sizes)
         self.sizes = sizes
         self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
@@ -81,6 +87,7 @@ class Network(object):
         nabla_w = [np.zeros(w.shape) for w in self.weights]
         # print("=== network.py: update_mini_batch")
         for x, y in mini_batch:
+            print("about to call backprop from within update_mini_batch")
             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
             nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
@@ -100,6 +107,7 @@ class Network(object):
         activation = x
         activations = [x] # list to store all the activations, layer by layer
         zs = [] # list to store all the z vectors, layer by layer
+        print("=== network.py: entering backprop")
         for b, w in zip(self.biases, self.weights):
             z = np.dot(w, activation)+b
             zs.append(z)

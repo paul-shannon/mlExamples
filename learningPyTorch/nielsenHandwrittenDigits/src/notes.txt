@@ -13,3 +13,23 @@ for i in n_epochs:
    error = calculate_error(y, predictions)
    model = update_model(model, error)
 
+
+*------------------------------------------------------------------------------------------------------------------------
+* nabla
+
+   Del, or nabla, is an operator used in mathematics, in particular in vector
+   calculus, as a vector differential operator, usually represented by the nabla
+   symbol ∇. When applied to a function defined on a one-dimensional domain, it
+   denotes its standard derivative as defined in calculus. When applied to a
+   field (a function defined on a multi-dimensional domain), it may denote the
+   gradient (locally steepest slope) of a scalar field (or sometimes of a vector
+   field, as in the Navier–Stokes equations), the divergence of a vector field,
+   or the curl (rotation) of a vector field, depending on the way it is applied.
+
+
+*------------------------------------------------------------------------------------------------------------------------
+*  My attempt to understand the backpropagation algorithm for training neural networks, Mike Gordon
+
+  ~/Documents/Backpropagation.pdf
+
+*------------------------------------------------------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 import sys
 sys.path.append("..")
 #----------------------------------------------------------------------------------------------------
-import network
+from network import *
 import mnist_loader
 import numpy as np
 import pdb
@@ -17,9 +17,9 @@ def runTests():
 
     test_sigmoid()
     test_sigmoid_prime()
-    test_feedforward()
-    test_update_mini_batch()
-    # test_backprop()
+    test_backprop()
+    #test_feedforward()
+    #test_update_mini_batch()
     # test_SGD()
     # test_evaluate()
     # test_cost_derivative()
@@ -157,7 +157,7 @@ def test_constructor():
     np.random.seed(17)  # for reproducability
 
     layerCounts = [5, 10, 2]  # number of neurons in each of the 
-    net = network.Network(layerCounts)
+    net = Network(layerCounts)
 
     assert(net.num_layers == 3)
     assert(net.sizes == layerCounts)
@@ -189,7 +189,7 @@ def test_sigmoid():
     print("--- test_sigmoid")
 
     z = 0.5
-    zSigmoid = network.sigmoid(z)
+    zSigmoid = sigmoid(z)
     expectedValue = 0.6224593312018546
     assert(zSigmoid - expectedValue < 0.000001)  # allow for small numerical variations
 
@@ -200,7 +200,7 @@ def test_sigmoid_prime():
     print("--- test_sigmoid_prime")
 
     z = 0.5
-    zSigmoidPrime = network.sigmoid_prime(z)
+    zSigmoidPrime = sigmoid_prime(z)
     expectedValue = 0.2350037122015945
     assert(zSigmoidPrime - expectedValue < 0.000001)  # allow for small numerical variations
 
@@ -226,21 +226,21 @@ def test_update_mini_batch():
     assert(isinstance(batch, tuple))
     array0 = batch[0]
     array1 = batch[1]
-    assert(array0.shape, (784, 1))  # a 28 x 28 bit map
-    assert(array1.shape, (10, 1))   # a 10-element bit vector, the number pictured in the bit map
+    assert(array0.shape == (784, 1))  # a 28 x 28 bit map
+    assert(array1.shape == (10, 1))   # a 10-element bit vector, the number pictured in the bit map
 
     layerCounts = [5, 10, 2]  # number of neurons in each of the 
-    demoNet = network.Network(layerCounts)
+    demoNet = Network(layerCounts)
     learningRate = 3.0
       
         #---------------------------------------------------------------
         # code extracted from network.update_mini_batch, for exploration
         #---------------------------------------------------------------
 
-    pdb.set_trace()
-
+    assert(demoNet.weights[0].shape == (10, 5))
+    assert(demoNet.weights[1].shape == (2, 10))
     nabla_b = [np.zeros(b.shape) for b in demoNet.biases]
-    assert(nabla_b[0]
+    #assert(nabla_b[0]
     nabla_w = [np.zeros(w.shape) for w in demoNet.weights]
     for x, y in mini_batch:
         delta_nabla_b, delta_nabla_w = demoNet.backprop(x, y)
@@ -256,6 +256,32 @@ def test_update_mini_batch():
 def test_backprop():
 
     print("--- test_backprop")
+    inputNodes = 784
+    hiddenLayerNodes = 30
+    outputNodes = 10
+    layerCounts = [inputNodes, hiddenLayerNodes, outputNodes]  # number of neurons in each of the 
+    demoNet = Network(layerCounts)
+
+      #  bias numbers stored by layer, 1 per node in all layers but the input layer
+      #  weights are stored per layer, 1 row for each input node (in the preceeding layer)
+      #   and 1 column for each  node in the current layer 
+    pdb.set_trace()
+    assert([x.shape for x in demoNet.biases] == ([(hiddenLayerNodes, 1), (outputNodes, 1)]))
+    assert([x.shape for x in demoNet.weights] == ([(hiddenLayerNodes, inputNodes), (outputNodes, hiddenLayerNodes)]))
+    training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
+
+    mini_batch_size = 10
+    tdLength = len(training_data)
+    miniBatches = [training_data[k:k+mini_batch_size] for k in range(0, tdLength, mini_batch_size)]
+    imageArray = miniBatches[0][0][0]
+    imageNumberVector = miniBatches[0][0][1]
+    assert(imageArray.shape == (784,1))
+    assert(imageNumberVector.shape == (10,1))
+    (nabla_bias, nabla_weights) = Network.backprop(demoNet, imageArray, imageNumberVector)
+    assert([x.shape for x in nabla_bias] == [(30, 1), (10, 1)])
+    assert([x.shape for x in nabla_weights] == [(30, 784), (10, 30)])
+    print("=== back from backprop")
+    pdb.set_trace()
 
     
 #----------------------------------------------------------------------------------------------------
@@ -281,13 +307,13 @@ def test_fullRun():
 
     print("--- test_fullRun")
     training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
-    net = network.Network([784, 30, 10])
+    net = Network([784, 30, 10])
     net.SGD(training_data, 30, 10, 3.0)
 
     # net.SGD(training_data, 30, 10, 3.0, test_data=test_data)
 
     
 #----------------------------------------------------------------------------------------------------
-if __name__ == '__main__':
-    runTests()
+#if __name__ == '__main__':
+#    runTests()
 
